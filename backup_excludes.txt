@@ -1,15 +1,30 @@
-.Spotlight-*/
+/.bzvol
+/.DocumentRevisions-*
+/.fseventsd
+/.hotfiles.btree
+/.Spotlight-*/
 .Trashes
+.Trash
+*/.Trash
+/.vol/*
 /afs/*
-/automount/*
+/automount
+/Backups.backupdb
 /cores/*
 /dev/*
-/Network/*
+/Library/Application Support/Comodo/AntiVirus/Quarantine
+/net
+/Network
+/PGPWDE01
+/PGPWDE02
 /private/tmp/*
+/private/var/db/dyld/dyld_*
 /private/var/run/*
 /private/var/spool/postfix/*
 /private/var/vm/*
 /Previous Systems.localized
+/System/Library/Caches/com.apple.bootstamps/*
+/System/Library/Caches/com.apple.corestorage/*
+/System/Library/Caches/com.apple.kext.caches/*
 /tmp/*
 /Volumes/*
-*/.Trash
