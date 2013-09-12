@@ -3,36 +3,28 @@
 ##########################################################
 # Disk backup script
 # Backs up local OSX system to remote system via rsync+ssh
+# 
+# THANKS TO (sources)
+#   - http://nicolasgallagher.com/mac-osx-bootable-backup-drive-with-rsync/
+#   - http://www.mtmckenna.com/posts/2011/11/26/incremental-backup-rsync-ssh/
+#   - http://bit.ly/1eF1pTP
 ##########################################################
 
 # Preconditions
-# Assumes rsync 3 and ssh on source and destination systems
-# Assumes local (sender) installation/operation
-# Assumes RSA key aleady accepted
-# Assumes sshkeychain & xcode installed (done with macport)
-
-# THANKS TO (sources)
-# http://nicolasgallagher.com/mac-osx-bootable-backup-drive-with-rsync/
-# http://www.mtmckenna.com/posts/2011/11/26/incremental-backup-rsync-ssh/
-# http://bit.ly/1eF1pTP
+# Assumes 
+#      - rsync 3 and ssh on source and destination systems
+#      - sshkeychain & xcode installed (done with macport)
+#      - local (sender) installation/operation
+#      - RSA key aleady accepted
 
 ## LOCAL AUTHENTICATION
 # TODO: replace auth proc
 # TODO: configure for cron
 # TODO: replace the sudo pw prompt
-
-# IMPORTANT: Make sure you update the `DST` variable to match the name of the
-# destination backup drive
+# TODO: option for initial or incremental, dry run true or false (-n)
 
 # TODO: put vars into config file
-# TODO: option for initial or incremental, dry run true or false (-n)
-# VARS #
-
-BUPHOME="$HOME/bin"
-LOGHOME="$HOME/backuplogs"
-TS=`date +'%Y%m%d%H%M'` # time stamp
-LOG="$LOGHOME/$TS.log"
-SRC="/" # LOCALPATH
+# USER-SPECIFIC VARS
 # DST="/Volumes/Macintosh HD/"
 DUNAME="adminuser"
 DADD="10.1.0.0" # destintion IP or host name
@@ -40,6 +32,12 @@ DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
 DST="$DUNAME@$DADD:$DDIR"
 EXCLUDE="$BUPHOME/backup_excludes.txt"
 
+# STANDARD VARS #
+BUPHOME="$HOME/bin"
+LOGHOME="$HOME/backuplogs"
+TS=`date +'%Y%m%d%H%M'` # time stamp
+LOG="$LOGHOME/$TS.log"
+SRC="/" # LOCALPATH; should not be changed
 PROG=$0
 OPTS="-AaEHixPvX -del --delete-excluded --fake-super -exclude-from=$EXCLUDE -e ssh"
 
