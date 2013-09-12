@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# TODO: put vars into config file
+# USER-SPECIFIC VARS: USER MUST MODIFY DESTINATION INFORMATION
+TEST=1 # activates -n switch on rsync; 0 if full run
+DUNAME="dstadminuname"
+DADD="10.1.0.0" # destintion IP or host name
+DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
+
 ##########################################################
 # Disk backup script
 # Backs up local OSX system to remote system via rsync+ssh
@@ -10,6 +17,8 @@
 #   - http://bit.ly/1eF1pTP (info from bombich on exclusions for OSX systems)
 #   - http://linuxproblem.org/art_9.html (ssh auto login details)
 #   - http://repoforge.org/use/ (setting up repoforge in order to install keychain on Linux)
+#   - http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts/ (more keychain)
+#   - http://crunchtools.com/ssh-keychain/ (helpful for linux keychain setup)
 ##########################################################
 
 ##########################################################
@@ -37,24 +46,6 @@
 # TODO: replace the sudo pw prompt
 # TODO: option for initial or incremental, dry run true or false (-n)
 
-# TODO: put vars into config file
-# USER-SPECIFIC VARS: USER MUST MODIFY DESTINATION INFORMATION
-# DST="/Volumes/Macintosh HD/"
-DUNAME="dstadminuname"
-DADD="10.1.0.0" # destintion IP or host name
-DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
-DST="$DUNAME@$DADD:$DDIR"
-EXCLUDE="$BUPHOME/backup_excludes.txt"
-
-# STANDARD VARS #
-BUPHOME="$HOME/bin"
-LOGHOME="$HOME/backuplogs"
-TS=`date +'%Y%m%d%H%M'` # time stamp
-LOG="$LOGHOME/$TS.log"
-SRC="/" # LOCALPATH; should not be changed
-PROG=$0
-OPTS="-AaEHixPvX -del --delete-excluded --fake-super -exclude-from=$EXCLUDE -e ssh"
-
 ##  SELECTED SIMPLE RSYNC OPTIONS FOR OSX SRC
 # -A,   --acls                  update the destination ACLs to be the same as the source ACLs
 # -a,   --archive               archive mode; equals -rlptgoD (no -H,-A,-X)
@@ -75,11 +66,36 @@ OPTS="-AaEHixPvX -del --delete-excluded --fake-super -exclude-from=$EXCLUDE -e s
 #       --exclude-from=FILE     reference a list of files to exclude
 # -e,                           ssh
 
+# STANDARD VARS #
+DST="$DUNAME@$DADD:$DDIR"
+EXCLUDE="$BUPHOME/backup_excludes.txt"
+BUPHOME="$HOME/bin"
+LOGHOME="$HOME/backuplogs"
+TS=`date +'%Y%m%d%H%M'` # time stamp
+LOG="$LOGHOME/$TS.log"
+SRC="/" # LOCALPATH; should not be changed
+PROG=$0
+# TODO: determine if OPTS string works on Linux as well as OSX; if not make second OPTS var
+OPTS="-AaEHixPvX -del --delete-excluded --fake-super -exclude-from=$EXCLUDE -e ssh"
+
 # create log directory if it does not exist
 mkdir -p $LOGHOME
 
 printf "starting backup process\n"
 
+# http://stackoverflow.com/questions/185451/quick-and-dirty-way-to-ensure-only-one-instance-of-a-shell-script-is-running-at-a
+# http://blog.interlinked.org/tutorials/rsync_time_machine.html
+LOCKFILE=${HOME}/temp/lock.txt
+if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then
+    echo "already running"
+    exit
+fi
+
+# make sure the lockfile is removed when we exit and then claim it
+trap "rm -f ${LOCKFILE}; exit" INT TERM EXIT
+echo $$ > ${LOCKFILE}
+
+# check if can read SRC
 if [ ! -r "$SRC" ]; then
     logger -t $PROG "Source $SRC not readable - Cannot start the sync process"
     exit;
@@ -93,15 +109,21 @@ fi
 
 $LOGGER -t $PROG "Start rsync"
 printf "starting Backup\n"
-
-sudo rsync $OPTS  $SRC $DST >> $LOG
-
+source ${HOME}/.keychain/${HOSTNAME}-sh
+if (($TEST == 1))
+then 
+    echo "TESTING ONLY\n"
+    sudo rsync $OPTS -n $SRC $DST >> $LOG 2>&1
+else
+    echo "FULL RUN\n"
+    sudo rsync $OPTS $SRC $DST >> $LOG 2>&1
+fi
+# TODO: Make the backup bootable on remote system; this works for local system
+# sudo bless -folder "$DST"/System/Library/CoreServices
 printf "completing Backup\n"
 logger -t $PROG "End rsync"
 printf "completed backup process\n"
-
-## Make the backup bootable
-# TODO: Make operable on remote system
-# sudo bless -folder "$DST"/System/Library/CoreServices
+printf "please inspect logfiles at: \n$LOG\n\n"
+printf "exiting\n"
 
 exit 0
