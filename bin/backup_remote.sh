@@ -9,6 +9,7 @@
 #   - http://www.mtmckenna.com/posts/2011/11/26/incremental-backup-rsync-ssh/ (fuller implementation)
 #   - http://bit.ly/1eF1pTP (info from bombich on exclusions for OSX systems)
 #   - http://linuxproblem.org/art_9.html (ssh auto login details)
+#   - http://repoforge.org/use/ (setting up repoforge in order to install keychain on Linux)
 ##########################################################
 
 ##########################################################
@@ -17,6 +18,7 @@
 #      - RSA key aleady accepted 
 #      - ssh authentication keys set up SRC to DST
 #      - sshkeychain installed on SRC (OSX src) or keychain (Linux src)
+#      - IMPORTANT: keychain installed to /opt/local/bin not /usr/local/bin
 #      - for OSX, xcode installed (done with macport)
 #      - local (sender) installation/operation
 #      - SRC is local file system being backed up to DST
