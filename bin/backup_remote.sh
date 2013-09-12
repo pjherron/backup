@@ -115,10 +115,10 @@ source ${HOME}/.keychain/${HOSTNAME}-sh
 if (($TEST == 1))
 then 
     echo "TESTING ONLY\n"
-    sudo rsync $OPTS -n $SRC $DST >> $LOG 2>&1
+    rsync $OPTS -n $SRC $DST >> $LOG 2>&1
 else
     echo "FULL RUN\n"
-    sudo rsync $OPTS $SRC $DST >> $LOG 2>&1
+    rsync $OPTS $SRC $DST >> $LOG 2>&1
 fi
 # TODO: Make the backup bootable on remote system; this works for local system
 # sudo bless -folder "$DST"/System/Library/CoreServices
