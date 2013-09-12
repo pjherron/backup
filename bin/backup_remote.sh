@@ -114,10 +114,10 @@ printf "starting Backup\n"
 source ${HOME}/.keychain/${HOSTNAME}-sh
 if (($TEST == 1))
 then 
-    echo "TESTING ONLY\n"
+    echo "TESTING ONLY"
     rsync $OPTS -n $SRC $DST >> $LOG 2>&1
 else
-    echo "FULL RUN\n"
+    echo "FULL RUN"
     rsync $OPTS $SRC $DST >> $LOG 2>&1
 fi
 # TODO: Make the backup bootable on remote system; this works for local system
