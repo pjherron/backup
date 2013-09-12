@@ -6,6 +6,7 @@ TEST=1 # activates -n switch on rsync; 0 if full run
 DUNAME="dstadminuname"
 DADD="10.1.0.0" # destintion IP or host name
 DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
+LOGGER="/usr/bin/logger"
 
 ##########################################################
 # Disk backup script
@@ -78,32 +79,33 @@ PROG=$0
 # TODO: determine if OPTS string works on Linux as well as OSX; if not make second OPTS var
 OPTS="-AaEHixPvX -del --delete-excluded --fake-super -exclude-from=$EXCLUDE -e ssh"
 
+printf "starting backup process\n"
+printf "logging to: \n$LOG\n\n"
+
 # create log directory if it does not exist
 mkdir -p $LOGHOME
 
-printf "starting backup process\n"
+## http://stackoverflow.com/questions/185451/quick-and-dirty-way-to-ensure-only-one-instance-of-a-shell-script-is-running-at-a
+## http://blog.interlinked.org/tutorials/rsync_time_machine.html
+# LOCKFILE=${HOME}/temp/lock.txt
+# if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then
+#     echo "already running"
+#     exit
+# fi
 
-# http://stackoverflow.com/questions/185451/quick-and-dirty-way-to-ensure-only-one-instance-of-a-shell-script-is-running-at-a
-# http://blog.interlinked.org/tutorials/rsync_time_machine.html
-LOCKFILE=${HOME}/temp/lock.txt
-if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then
-    echo "already running"
-    exit
-fi
-
-# make sure the lockfile is removed when we exit and then claim it
-trap "rm -f ${LOCKFILE}; exit" INT TERM EXIT
-echo $$ > ${LOCKFILE}
+## make sure the lockfile is removed when we exit and then claim it
+# trap "rm -f ${LOCKFILE}; exit" INT TERM EXIT
+# echo $$ > ${LOCKFILE}
 
 # check if can read SRC
 if [ ! -r "$SRC" ]; then
-    logger -t $PROG "Source $SRC not readable - Cannot start the sync process"
+    $LOGGER -t $PROG "Source $SRC not readable - Cannot start the sync process"
     exit;
 fi
 
-## probably does not work
+## TODO: fix to work on remote; probably does not work
 # if [ ! -w "$DST" ]; then
-#     logger -t $PROG "Destination $DST not writeable - Cannot start the sync process"
+#     $LOGGER -t $PROG "Destination $DST not writeable - Cannot start the sync process"
 #     exit;
 # fi
 
@@ -121,9 +123,11 @@ fi
 # TODO: Make the backup bootable on remote system; this works for local system
 # sudo bless -folder "$DST"/System/Library/CoreServices
 printf "completing Backup\n"
-logger -t $PROG "End rsync"
+$LOGGER -t $PROG "End rsync"
 printf "completed backup process\n"
 printf "please inspect logfiles at: \n$LOG\n\n"
 printf "exiting\n"
+
+#rm -f ${LOCKFILE}
 
 exit 0
