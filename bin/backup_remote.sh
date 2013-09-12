@@ -5,17 +5,29 @@
 # Backs up local OSX system to remote system via rsync+ssh
 # 
 # THANKS TO (sources)
-#   - http://nicolasgallagher.com/mac-osx-bootable-backup-drive-with-rsync/
-#   - http://www.mtmckenna.com/posts/2011/11/26/incremental-backup-rsync-ssh/
-#   - http://bit.ly/1eF1pTP
+#   - http://nicolasgallagher.com/mac-osx-bootable-backup-drive-with-rsync/ (great example script)
+#   - http://www.mtmckenna.com/posts/2011/11/26/incremental-backup-rsync-ssh/ (fuller implementation)
+#   - http://bit.ly/1eF1pTP (info from bombich on exclusions for OSX systems)
+#   - http://linuxproblem.org/art_9.html (ssh auto login details)
 ##########################################################
 
+##########################################################
 # Preconditions
-# Assumes 
 #      - rsync 3 and ssh on source and destination systems
-#      - sshkeychain & xcode installed (done with macport)
+#      - RSA key aleady accepted 
+#      - ssh authentication keys set up SRC to DST
+#      - sshkeychain installed on SRC (OSX src) or keychain (Linux src)
+#      - for OSX, xcode installed (done with macport)
 #      - local (sender) installation/operation
-#      - RSA key aleady accepted
+#      - SRC is local file system being backed up to DST
+#      - $HOME/bin directory containing backup_excludes.txt
+#      - rsync options string currently assumes SRC is OSX
+##########################################################
+# Postconditions
+#      - system backs up to path specified by user at destination system
+#      - backup is not quite bootable (needs 'bless')
+#      - logs backup in two places: to sys logs and to logfiles in $HOME/backuplogs
+##########################################################
 
 ## LOCAL AUTHENTICATION
 # TODO: replace auth proc
@@ -24,9 +36,9 @@
 # TODO: option for initial or incremental, dry run true or false (-n)
 
 # TODO: put vars into config file
-# USER-SPECIFIC VARS
+# USER-SPECIFIC VARS: USER MUST MODIFY DESTINATION INFORMATION
 # DST="/Volumes/Macintosh HD/"
-DUNAME="adminuser"
+DUNAME="dstadminuname"
 DADD="10.1.0.0" # destintion IP or host name
 DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
 DST="$DUNAME@$DADD:$DDIR"
@@ -41,7 +53,7 @@ SRC="/" # LOCALPATH; should not be changed
 PROG=$0
 OPTS="-AaEHixPvX -del --delete-excluded --fake-super -exclude-from=$EXCLUDE -e ssh"
 
-##  SELECTED SIMPLE RSYNC OPTIONS WITH SHORTHAND
+##  SELECTED SIMPLE RSYNC OPTIONS FOR OSX SRC
 # -A,   --acls                  update the destination ACLs to be the same as the source ACLs
 # -a,   --archive               archive mode; equals -rlptgoD (no -H,-A,-X)
 # -E,   --executability         preserve executability
@@ -60,6 +72,9 @@ OPTS="-AaEHixPvX -del --delete-excluded --fake-super -exclude-from=$EXCLUDE -e s
 ## AND OPTIONS THAT NEED ADDED ARGS
 #       --exclude-from=FILE     reference a list of files to exclude
 # -e,                           ssh
+
+# create log directory if it does not exist
+mkdir -p $LOGHOME
 
 printf "starting backup process\n"
 
