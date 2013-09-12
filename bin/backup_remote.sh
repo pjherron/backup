@@ -2,6 +2,7 @@
 
 # TODO: put vars into config file
 # USER-SPECIFIC VARS: USER MUST MODIFY DESTINATION INFORMATION
+# TODO: variable for forced include of secondary volumes...NEEDS TO BE MORE GENERAL
 TEST=1 # activates -n switch on rsync; 0 if full run
 DUNAME="dstadminuname"
 DADD="10.1.0.0" # destintion IP or host name
