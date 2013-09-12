@@ -69,8 +69,8 @@ LOGGER="/usr/bin/logger"
 
 # STANDARD VARS #
 DST="$DUNAME@$DADD:$DDIR"
-EXCLUDE="$BUPHOME/backup_excludes.txt"
 BUPHOME="$HOME/bin"
+EXCLUDE="$BUPHOME/backup_excludes.txt"
 LOGHOME="$HOME/backuplogs"
 TS=`date +'%Y%m%d%H%M'` # time stamp
 LOG="$LOGHOME/$TS.log"
