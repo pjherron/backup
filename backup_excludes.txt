@@ -1,4 +1,5 @@
 /.bzvol
+*/.DS_Store
 /.DocumentRevisions-*
 /.fseventsd
 /.hotfiles.btree
