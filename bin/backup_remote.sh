@@ -77,7 +77,7 @@ SRC="/" # LOCALPATH; should not be changed
 PROG=$0
 # TODO: determine if OPTS string works on Linux as well as OSX; if not make second OPTS var
 OPTS="-AaEHixX -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
-TESTOPTS="-AaEHixvvX -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
+TESTOPTS= "$OPTS -vv"
 
 printf "starting backup process\n"
 printf "logging to: \n$LOG\n\n"
