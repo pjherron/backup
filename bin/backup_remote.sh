@@ -78,7 +78,7 @@ LOG="$LOGHOME/$TS.log"
 SRC="/" # LOCALPATH; should not be changed
 PROG=$0
 # TODO: determine if OPTS string works on Linux as well as OSX; if not make second OPTS var
-OPTS="-AaEHixPvX -del --delete-excluded --fake-super -exclude-from=$EXCLUDE -e ssh"
+OPTS="-AaEHixPvX -del --delete-excluded --fake-super --exclude-from=$EXCLUDE -e ssh"
 
 printf "starting backup process\n"
 printf "logging to: \n$LOG\n\n"
