@@ -56,14 +56,12 @@ LOGGER="/usr/bin/logger"
 # -H,   --hard-links            preserve hard-links
 # -i,   --itemize-changes       output a change-summary for all updates
 # -x,   --one-file-system       don't cross device boundaries (ignore mounted volumes)
-#       --partial               keep partially transferred files
-#       --progress              show progress during transfer
-# -P    (same as --partial --progress)
 # -v    --verbose               increase verbosity
 # -X,   --xattrs                preserve extended attributes
 ##  SELECTED SIMPLE RSYNC OPTIONS W/O SHORTHAND
 #       --delete-excluded       delete any files (on DST) that are part of the list of excluded files
 #       --fake-super            store/recover privileged attrs using xattrs
+#       --partial               keep partially transferred files
 ## AND OPTIONS THAT NEED ADDED ARGS
 #       --exclude-from=FILE     reference a list of files to exclude
 # -e,                           ssh
@@ -71,14 +69,15 @@ LOGGER="/usr/bin/logger"
 # STANDARD VARS #
 DST="$DUNAME@$DADD:$DDIR"
 BUPHOME="$HOME/bin"
-EXCLUDE="$BUPHOME/backup_excludes.txt"
+EXCLUDEF="$BUPHOME/backup_excludes.txt"
 LOGHOME="$HOME/backuplogs"
 TS=`date +'%Y%m%d%H%M'` # time stamp
 LOG="$LOGHOME/$TS.log"
 SRC="/" # LOCALPATH; should not be changed
 PROG=$0
 # TODO: determine if OPTS string works on Linux as well as OSX; if not make second OPTS var
-OPTS="-AaEHixPvX -del --delete-excluded --fake-super --exclude-from=$EXCLUDE -e ssh"
+OPTS="-AaEHixX -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
+TESTOPTS="-AaEHixvvX -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
 
 printf "starting backup process\n"
 printf "logging to: \n$LOG\n\n"
@@ -116,7 +115,7 @@ source ${HOME}/.keychain/${HOSTNAME}-sh
 if (($TEST == 1))
 then 
     echo "TESTING ONLY"
-    rsync $OPTS -n $SRC $DST >> $LOG 2>&1
+    rsync $TESTOPTS $SRC $DST >> $LOG 2>&1
 else
     echo "FULL RUN"
     rsync $OPTS $SRC $DST >> $LOG 2>&1
