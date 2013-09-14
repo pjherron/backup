@@ -1,13 +1,16 @@
 #!/bin/bash
 
-# TODO: put vars into config file
 # USER-SPECIFIC VARS: USER MUST MODIFY DESTINATION INFORMATION
 # TODO: variable for forced include of secondary volumes...NEEDS TO BE MORE GENERAL
-#TEST=1 # activates -vv
-DUNAME="dstadminuname"
+
+DUNAME="dstadminuname" # remote system user name
 DADD="10.1.0.0" # destintion IP or host name
 DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
-LOGGER="/usr/bin/logger"
+LOGGER="/usr/bin/logger"  #always check your system for where the logger app is
+SRC="/" # LOCALPATH; do not end with '/' unless starting from root dir
+LOGHOME="$HOME/backuplogs"  #customize name of dir if system needs >1 backups
+EXCLUDEFILE="1"  # only if using an exclude file
+EXCLUDEF="$BUPHOME/backup_excludes.txt"  #default; can use yr own name
 
 ##########################################################
 # Disk backup script
@@ -43,16 +46,12 @@ LOGGER="/usr/bin/logger"
 ##########################################################
 
 ## LOCAL AUTHENTICATION
-# TODO: replace auth proc
 # TODO: configure for cron
-# TODO: replace the sudo pw prompt
-# TODO: option for initial or incremental, dry run true or false (-n)
 
 ##  SELECTED SIMPLE RSYNC OPTIONS FOR OSX SRC
 # -A,   --acls                  update the destination ACLs to be the same as the source ACLs
 # -a,   --archive               archive mode; equals -rlptgoD (no -H,-A,-X)
 # -E,   --executability         preserve executability
-# -del, --delete-during         receiver deletes during the transfer
 # -H,   --hard-links            preserve hard-links
 # -i,   --itemize-changes       output a change-summary for all updates
 # -x,   --one-file-system       don't cross device boundaries (ignore mounted volumes)
@@ -63,71 +62,44 @@ LOGGER="/usr/bin/logger"
 #       --fake-super            store/recover privileged attrs using xattrs
 #       --partial               keep partially transferred files
 ## AND OPTIONS THAT NEED ADDED ARGS
+#       --exclude=PATTERN       exclude files matching PATTERN
 #       --exclude-from=FILE     reference a list of files to exclude
 # -e,                           ssh
 
 # STANDARD VARS #
 DST="$DUNAME@$DADD:$DDIR"
 BUPHOME="$HOME/bin"
-EXCLUDEF="$BUPHOME/backup_excludes.txt"
-LOGHOME="$HOME/backuplogs"
 TS=`date +'%Y%m%d%H%M'` # time stamp
 LOG="$LOGHOME/$TS.log"
-SRC="/" # LOCALPATH; should not be changed
 PROG=$0
-# TODO: determine if OPTS string works on Linux as well as OSX; if not make second OPTS var
-OPTS="-AaEHixXvv -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
-# TESTOPTS="-AaEHivvxX -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
-
+# if user indicates an exclude file
+if (($EXCLUDEFILE==1))
+then 
+    OPTS="-AaEHixXvv --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
+else 
+    OPTS="-AaEHixXvv --delete-excluded --fake-super --partial -e ssh"
+    
+# begin
 printf "starting backup process\n"
 printf "logging to: \n$LOG\n\n"
-
-# create log directory if it does not exist
-mkdir -p $LOGHOME
-
-## http://stackoverflow.com/questions/185451/quick-and-dirty-way-to-ensure-only-one-instance-of-a-shell-script-is-running-at-a
-## http://blog.interlinked.org/tutorials/rsync_time_machine.html
-# LOCKFILE=${HOME}/temp/lock.txt
-# if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then
-#     echo "already running"
-#     exit
-# fi
-
-## make sure the lockfile is removed when we exit and then claim it
-# trap "rm -f ${LOCKFILE}; exit" INT TERM EXIT
-# echo $$ > ${LOCKFILE}
-
+mkdir -p $LOGHOME # create log directory if it does not exist
 # check if can read SRC
 if [ ! -r "$SRC" ]; then
     $LOGGER -t $PROG "Source $SRC not readable - Cannot start the sync process"
     exit;
 fi
-
-## TODO: fix to work on remote; probably does not work
-# if [ ! -w "$DST" ]; then
-#     $LOGGER -t $PROG "Destination $DST not writeable - Cannot start the sync process"
-#     exit;
-# fi
-
 $LOGGER -t $PROG "Start rsync"
 printf "starting Backup\n"
 source ${HOME}/.keychain/${HOSTNAME}-sh
-#if (($TEST == 1))
-#then 
-#    echo "TESTING ONLY"
-#    rsync $TESTOPTS $SRC $DST >> $LOG 2>&1
-#else
 echo "FULL RUN"
 rsync $OPTS $SRC $DST >> $LOG 2>&1
-#fi
 # TODO: Make the backup bootable on remote system; this works for local system
 # sudo bless -folder "$DST"/System/Library/CoreServices
+# ending
 printf "completing Backup\n"
 $LOGGER -t $PROG "End rsync"
 printf "completed backup process\n"
 printf "please inspect logfiles at: \n$LOG\n\n"
 printf "exiting\n"
-
-#rm -f ${LOCKFILE}
 
 exit 0
