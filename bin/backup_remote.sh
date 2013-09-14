@@ -78,7 +78,7 @@ then
     OPTS="-AaEHixXvv --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
 else 
     OPTS="-AaEHixXvv --delete-excluded --fake-super --partial -e ssh"
-    
+fi  
 # begin
 printf "starting backup process\n"
 printf "logging to: \n$LOG\n\n"
