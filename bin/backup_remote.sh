@@ -3,7 +3,7 @@
 # TODO: put vars into config file
 # USER-SPECIFIC VARS: USER MUST MODIFY DESTINATION INFORMATION
 # TODO: variable for forced include of secondary volumes...NEEDS TO BE MORE GENERAL
-TEST=1 # activates -n switch on rsync; 0 if full run
+#TEST=1 # activates -vv
 DUNAME="dstadminuname"
 DADD="10.1.0.0" # destintion IP or host name
 DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
@@ -76,8 +76,8 @@ LOG="$LOGHOME/$TS.log"
 SRC="/" # LOCALPATH; should not be changed
 PROG=$0
 # TODO: determine if OPTS string works on Linux as well as OSX; if not make second OPTS var
-OPTS="-AaEHixX -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
-TESTOPTS="-AaEHivvxX -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
+OPTS="-AaEHixXvv -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
+# TESTOPTS="-AaEHivvxX -del --delete-excluded --fake-super --partial --exclude-from=$EXCLUDEF -e ssh"
 
 printf "starting backup process\n"
 printf "logging to: \n$LOG\n\n"
@@ -112,14 +112,14 @@ fi
 $LOGGER -t $PROG "Start rsync"
 printf "starting Backup\n"
 source ${HOME}/.keychain/${HOSTNAME}-sh
-if (($TEST == 1))
-then 
-    echo "TESTING ONLY"
-    rsync $TESTOPTS $SRC $DST >> $LOG 2>&1
-else
-    echo "FULL RUN"
-    rsync $OPTS $SRC $DST >> $LOG 2>&1
-fi
+#if (($TEST == 1))
+#then 
+#    echo "TESTING ONLY"
+#    rsync $TESTOPTS $SRC $DST >> $LOG 2>&1
+#else
+echo "FULL RUN"
+rsync $OPTS $SRC $DST >> $LOG 2>&1
+#fi
 # TODO: Make the backup bootable on remote system; this works for local system
 # sudo bless -folder "$DST"/System/Library/CoreServices
 printf "completing Backup\n"
