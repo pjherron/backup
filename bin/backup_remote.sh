@@ -8,6 +8,7 @@ DADD="10.1.0.0" # destintion IP or host name
 DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
 LOGGER="/usr/bin/logger"  #always check your system for where the logger app is
 SRC="/" # LOCALPATH; do not end with '/' unless starting from root dir
+BUPHOME="$HOME/bin" # probably does not need changing
 LOGHOME="$HOME/backuplogs"  #customize name of dir if system needs >1 backups
 EXCLUDEFILE="1"  # only if using an exclude file
 EXCLUDEF="$BUPHOME/backup_excludes.txt"  #default; can use yr own name
@@ -68,7 +69,6 @@ EXCLUDEF="$BUPHOME/backup_excludes.txt"  #default; can use yr own name
 
 # STANDARD VARS #
 DST="$DUNAME@$DADD:$DDIR"
-BUPHOME="$HOME/bin"
 TS=`date +'%Y%m%d%H%M'` # time stamp
 LOG="$LOGHOME/$TS.log"
 PROG=$0
