@@ -16,6 +16,7 @@
 ##########################################################
 
 # USER-SPECIFIC VARS: USER MUST MODIFY DESTINATION INFORMATION
+# HOME=path to user home # may be necessary if running as root
 DUNAME="dstadminuname" # remote system user name
 DADD="10.1.0.0" # destintion IP or host name
 DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
