@@ -19,7 +19,7 @@
 # HOME=path to user home # may be necessary if running as root
 DUNAME="dstadminuname" # remote system user name
 DADD="10.1.0.0" # destintion IP or host name
-DDIR="/ABS/PATH/TO/BACKUP/DEST/"  # REMOTEPATH
+DDIR="/ABS/PATH/TO/BACKUP/DEST"  # REMOTEPATH
 LOGGER="/usr/bin/logger"  #always check your system for where the logger app is
 SRC="/" # LOCALPATH; do not end with '/' unless starting from root directory
 BUPHOME="$HOME/bin" # probably does not need changing
