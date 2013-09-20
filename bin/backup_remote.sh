@@ -92,11 +92,12 @@ $LOGGER -t $PROG "Start rsync"
 printf "starting Backup\n"
 source ${HOME}/.keychain/${HOSTNAME}-sh
 echo "FULL RUN"
-rsync $OPTS $SRC $DST >> $LOG 2>&1 \
+rsync $OPTS $SRC $DST \
 && ssh $DUNAME@$DADD \
       "mv ${DDIR}/incomplete_back-${TS} ${DDIR}/back-${TS} \
       && rm -f ${DDIR}/current \
-      && ln -s ${DDIR}/back-${TS} ${DDIR}/current"
+      && ln -s ${DDIR}/back-${TS} ${DDIR}/current" \
+      >> $LOG 2>&1 
 
 # ending
 printf "completing Backup\n"
