@@ -75,9 +75,9 @@ PROG=$0
 # if user indicates an exclude file
 if (($EXCLUDEFILE==1))
 then 
-    OPTS="-AaEHixX --delete-after --delete-excluded --fake-super --force --partial --exclude-from=$EXCLUDEF -e ssh"
+    OPTS="-AaEHixX --delete-after --delete-excluded --fake-super --force --partial --link-dest=$DDIR/current --exclude-from=$EXCLUDEF -e ssh"
 else 
-    OPTS="-AaEHixX --delete-after --delete-excluded --fake-super --force --partial -e ssh"
+    OPTS="-AaEHixX --delete-after --delete-excluded --fake-super --force --partial --link-dest=$DDIR/current -e ssh"
 fi  
 # begin
 printf "starting backup process\n"
@@ -96,7 +96,7 @@ rsync $OPTS $SRC $DST >> $LOG 2>&1 \
 && ssh $DUNAME@$DADD \
       "mv ${DDIR}/incomplete_back-${TS} ${DDIR}/back-${TS} \
       && rm -f ${DDIR}/current \
-      && ln -s back-${TS} ${DDIR}/current"
+      && ln -s ${DDIR}/back-${TS} ${DDIR}/current"
 
 # ending
 printf "completing Backup\n"
