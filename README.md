@@ -1,6 +1,8 @@
-# Dotfiles (Nicolas Gallagher)
+# Dotfiles
 
 My OS X dotfiles.
+Originally authored by Nicholas Gallager
+Modified by Patrick Herron
 
 
 ## How to install
